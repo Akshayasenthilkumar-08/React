@@ -1,39 +1,36 @@
 import React, { useEffect, useState } from "react";
 
+const API_KEY = process.env.REACT_APP_EXCHANGE_API_KEY;
+const BASE_URL = process.env.REACT_APP_EXCHANGE_BASE_URL;
+
 function ExchangeRates() {
   const [rates, setRates] = useState({});
   const [base, setBase] = useState("USD");
   const [date, setDate] = useState("");
 
   useEffect(() => {
-    fetch(`https://v6.exchangerate-api.com/v6/a3d42d8678221ebbb1785c0a/latest/${base}`)
-      .then(res => res.json())
-      .then(data => {
-        setRates(data.conversion_rates);
+    fetch(`${BASE_URL}/${API_KEY}/latest/${base}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setRates(data.conversion_rates || {});
         setDate(data.time_last_update_utc);
       })
-      .catch(err => console.log("Error:", err));
+      .catch((err) => console.log("Error:", err));
   }, [base]);
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2 style={{fontSize:"24px"}}>💱 Exchange Rates (Base: {base})</h2>
+      <h2>💱 Exchange Rates (Base: {base})</h2>
       <p>Last Updated: {date}</p>
 
-      <select
-        value={base}
-        onChange={(e) => setBase(e.target.value)}
-       
-      >
+      <select value={base} onChange={(e) => setBase(e.target.value)}>
         <option value="USD">USD</option>
         <option value="INR">INR</option>
         <option value="EUR">EUR</option>
         <option value="JPY">JPY</option>
       </select>
 
-      <table
-        border="1"
-      >
+      <table border="1" style={{ margin: "20px auto" }}>
         <thead>
           <tr>
             <th>Currency</th>
@@ -42,7 +39,7 @@ function ExchangeRates() {
         </thead>
         <tbody>
           {Object.keys(rates)
-            .slice(0, 10) // only first 10 currencies
+            .slice(0, 10)
             .map((cur) => (
               <tr key={cur}>
                 <td>{cur}</td>
